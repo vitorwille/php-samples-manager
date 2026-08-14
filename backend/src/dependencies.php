@@ -2,7 +2,9 @@
 
 use App\Application\UseCase\CreateUser;
 use App\Application\UseCase\GetAllUsers;
+use App\Application\UseCase\LoginUser;
 use App\Domain\Repository\UserRepositoryInterface;
+use App\Infrastructure\Controller\AuthController;
 use App\Infrastructure\Controller\UserController;
 use App\Infrastructure\Repository\MySqlUserRepository;
 use Psr\Container\ContainerInterface;
@@ -32,5 +34,7 @@ return static function (ContainerInterface $container): void {
 
     $container->set(GetAllUsers::class, fn(ContainerInterface $c) => new GetAllUsers($c->get(UserRepositoryInterface::class)));
     $container->set(CreateUser::class, fn(ContainerInterface $c) => new CreateUser($c->get(UserRepositoryInterface::class)));
+    $container->set(LoginUser::class, fn(ContainerInterface $c) => new LoginUser($c->get(UserRepositoryInterface::class)));
+    $container->set(AuthController::class, fn(ContainerInterface $c) => new AuthController($c->get(LoginUser::class)));
     $container->set(UserController::class, fn(ContainerInterface $c) => new UserController($c->get(GetAllUsers::class), $c->get(CreateUser::class)));
 };

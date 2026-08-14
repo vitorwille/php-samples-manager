@@ -32,4 +32,13 @@ final class MySqlUserRepository implements UserRepositoryInterface
 
         return new User((int) $this->pdo->lastInsertId(), $name, $email, $password);
     }
+
+    public function findByEmail(string $email): ?User
+    {
+        $stmt = $this->pdo->prepare('SELECT id, name, email, password FROM users WHERE email = ?');
+        $stmt->execute([$email]);
+        $row = $stmt->fetch();
+
+        return $row ? new User((int) $row['id'], $row['name'], $row['email'], $row['password']) : null;
+    }
 }
