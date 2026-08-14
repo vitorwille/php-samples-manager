@@ -1,0 +1,35 @@
+services:
+  microlims-db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD" ]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  microlims-api:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: microlims-db
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      microlims-db:
+        condition: service_healthy
+
+volumes:
+  db_data:
