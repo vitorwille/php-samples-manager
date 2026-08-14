@@ -1,0 +1,13 @@
+# Backend
+/vendor/
+*.log
+
+# Frontend
+node_modules/
+dist/
+
+# env
+.env
+
+# PDF
+Teste_Pratico_Candidato.pdf
