@@ -14,7 +14,7 @@ final class SessionAuthMiddleware implements MiddlewareInterface
     {
         if (empty($_SESSION['user_id'])) {
             $response = new SlimResponse();
-            $response->getBody()->write(json_encode(['error' => 'Unauthorized']));
+            $response->getBody()->write(json_encode(['error' => 'Unauthorized'], JSON_PRETTY_PRINT));
 
             return $response
                 ->withHeader('Content-Type', 'application/json')
