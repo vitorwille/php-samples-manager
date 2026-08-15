@@ -1,6 +1,7 @@
 <?php
 
 use App\Infrastructure\Controller\AuthController;
+use App\Infrastructure\Controller\SampleController;
 use App\Infrastructure\Controller\UserController;
 use App\Infrastructure\Middleware\SessionAuthMiddleware;
 use Slim\Routing\RouteCollectorProxy;
@@ -13,9 +14,10 @@ return static function (App $app): void {
     $app->get('/api/users', [UserController::class, 'index'])->add(SessionAuthMiddleware::class);
 
     $app->group('/api/samples', function (RouteCollectorProxy $group): void {
-        //   $group->get('', [SampleController::class, 'index']);
-        //  $group->post('', [SampleController::class, 'create']);
-
-        // TODO: criar funcionalidade de amostras
+        $group->get('', [SampleController::class, 'index']);
+        $group->get('?search={searchQuery}', [SampleController::class, 'searchBySampleCode']);
+        $group->get('?code={sampleCode}', [SampleController::class, 'findBySampleCode']);
+        $group->post('', [SampleController::class, 'create']);
+        $group->patch('', [SampleController::class, 'update']);
     })->add(SessionAuthMiddleware::class);
 };
