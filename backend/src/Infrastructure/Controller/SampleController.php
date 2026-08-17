@@ -144,7 +144,7 @@ final class SampleController
         }
 
         $sampleStatusValue = strtolower(trim((string) ($body['sampleStatus'] ?? '')));
-        if (!in_array($sampleStatusValue, ['em_analise', 'concluida', 'rejeitada'], true)) {
+        if ($sampleStatusValue !== '' && !in_array($sampleStatusValue, ['em_analise', 'concluida', 'rejeitada'], true)) {
             $response->getBody()->write(json_encode(['error' => 'Sample status must be "em_analise", "concluida" or "rejeitada".'], JSON_PRETTY_PRINT));
 
             return $response->withStatus(400);
