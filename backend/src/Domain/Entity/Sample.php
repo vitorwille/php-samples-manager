@@ -11,7 +11,7 @@ final class Sample
         private readonly string $sampleCode,
         private readonly SampleType $sampleType,
         private readonly SampleStatus $sampleStatus,  // enum
-        private readonly string $sampleTechnician,
+        private readonly ?string $sampleTechnician,
         private readonly DateTime $sampleReceivalDate,
         private readonly ?DateTime $sampleConclusionDate,
     ) {}
@@ -36,7 +36,7 @@ final class Sample
         return $this->sampleStatus;
     }
 
-    public function sampleTechnician(): string
+    public function sampleTechnician(): ?string
     {
         return $this->sampleTechnician;
     }

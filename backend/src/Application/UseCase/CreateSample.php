@@ -14,7 +14,7 @@ final class CreateSample
         private readonly SampleRepositoryInterface $samples
     ) {}
 
-    public function handle(string $sampleCode, SampleType $sampleType, SampleStatus $sampleStatus, string $sampleTechnician, DateTime $sampleReceivalDate, ?DateTime $sampleConclusionDate): Sample
+    public function handle(string $sampleCode, SampleType $sampleType, SampleStatus $sampleStatus, ?string $sampleTechnician, DateTime $sampleReceivalDate, ?DateTime $sampleConclusionDate): Sample
     {
         if (trim($sampleCode) === '') {
             throw new \InvalidArgumentException('Missing required field: "sampleCode".');
