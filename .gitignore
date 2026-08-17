@@ -1,6 +1,7 @@
 # Backend
 /backend/vendor/
 /backend/*.log
+/backend/coverage/
 
 # Frontend
 frontend/node_modules/
