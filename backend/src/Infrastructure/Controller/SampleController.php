@@ -8,6 +8,7 @@ use App\Application\UseCase\GetAllSamples;
 use App\Application\UseCase\GetSamplesByType;
 use App\Application\UseCase\SearchSamplesByCode;
 use App\Application\UseCase\UpdateSampleStatus;
+use App\Application\UseCase\UpdateSampleTechnician;
 use App\Domain\Entity\SampleStatus;
 use App\Domain\Entity\SampleType;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -23,6 +24,7 @@ final class SampleController
         private readonly SearchSamplesByCode $searchSamplesByCode,
         private readonly CreateSample $createSample,
         private readonly UpdateSampleStatus $updateSampleStatus,
+        private readonly UpdateSampleTechnician $updateSampleTechnician,
     ) {}
 
     public function index(Request $request, Response $response): Response
@@ -98,11 +100,18 @@ final class SampleController
     {
         $body = json_decode((string) $request->getBody(), true) ?? [];
 
+        $typeValue = strtolower(trim((string) ($body['sampleType'] ?? '')));
+        if (!in_array($typeValue, ['agua', 'ar', 'efluente', 'solo'], true)) {
+            $response->getBody()->write(json_encode(['error' => 'Sample type must be "agua", "ar", "solo" or "efluente".'], JSON_PRETTY_PRINT));
+
+            return $response->withStatus(400);
+        }
+
         try {
             $sample = $this->createSample->handle(
                 (string) ($body['sampleCode'] ?? ''),
-                $this->parseType($body['sampleType'] ?? ''),
-                $this->parseStatus('recebida'),
+                $this->parseType($typeValue),
+                $this->parseStatus('recebida'),  // deve ser criada sempre como 'recebida'
                 (string) ($body['sampleTechnician'] ?? ''),
                 new DateTime((string) ($body['sampleReceivalDate'] ?? '')),
                 null
@@ -124,6 +133,7 @@ final class SampleController
 
         $sampleCode = (string) ($body['sampleCode'] ?? '');
         $sampleStatus = (string) ($body['sampleStatus'] ?? '');
+        $sampleTechnician = $body['sampleTechnician'] ?? null;
         $sampleConclusionDate = $body['sampleConclusionDate'] ?? null;
         $sampleConclusionDate = $sampleConclusionDate ? new DateTime($sampleConclusionDate) : null;
 
@@ -133,18 +143,30 @@ final class SampleController
             return $response->withStatus(400);
         }
 
-        if ($sampleStatus === '') {
-            $response->getBody()->write(json_encode(['error' => 'Missing required field: "sampleStatus".'], JSON_PRETTY_PRINT));
+        $sampleStatusValue = strtolower(trim((string) ($body['sampleStatus'] ?? '')));
+        if (!in_array($sampleStatusValue, ['em_analise', 'concluida', 'rejeitada'], true)) {
+            $response->getBody()->write(json_encode(['error' => 'Sample status must be "em_analise", "concluida" or "rejeitada".'], JSON_PRETTY_PRINT));
 
             return $response->withStatus(400);
         }
 
         try {
-            $sample = $this->updateSampleStatus->handle(
-                $sampleCode,
-                $this->parseStatus($sampleStatus),
-                $sampleConclusionDate,
-            );
+            if ($sampleStatus !== '') {
+                $sample = $this->updateSampleStatus->handle(
+                    $sampleCode,
+                    $this->parseStatus($sampleStatus),
+                    $sampleConclusionDate,
+                );
+            } elseif ($sampleTechnician !== null) {
+                $sample = $this->updateSampleTechnician->handle(
+                    $sampleCode,
+                    (string) $sampleTechnician,
+                );
+            } else {
+                $response->getBody()->write(json_encode(['error' => 'Missing required field: "sampleStatus" or "sampleTechnician".'], JSON_PRETTY_PRINT));
+
+                return $response->withStatus(400);
+            }
         } catch (\InvalidArgumentException|\ValueError $e) {
             $response->getBody()->write(json_encode(['error' => $e->getMessage()], JSON_PRETTY_PRINT));
 
