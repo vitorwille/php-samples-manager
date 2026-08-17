@@ -69,6 +69,17 @@ final class MySqlSampleRepository implements SampleRepositoryInterface
         return $samples;
     }
 
+    public function getNextSequencial(string $prefix, int $year): int
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT COALESCE(MAX(CAST(RIGHT(sample_code, 6) AS UNSIGNED)), 0) + 1 AS next_seq
+             FROM samples WHERE sample_code LIKE ?'
+        );
+        $stmt->execute(["$prefix-$year-%"]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
     public function createSample(string $sampleCode, SampleType $sampleType, SampleStatus $sampleStatus, ?string $sampleTechnician, DateTime $sampleReceivalDate, ?DateTime $sampleConclusionDate): Sample
     {
         $stmt = $this->pdo->prepare(

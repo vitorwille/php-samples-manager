@@ -109,7 +109,6 @@ final class SampleController
 
         try {
             $sample = $this->createSample->handle(
-                (string) ($body['sampleCode'] ?? ''),
                 $this->parseType($typeValue),
                 $this->parseStatus('recebida'),  // deve ser criada sempre como 'recebida'
                 (string) ($body['sampleTechnician'] ?? ''),

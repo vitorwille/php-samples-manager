@@ -5,10 +5,10 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8080/api/samples?code=01-teste
+  url: http://localhost:8080/api/samples?code=amostra1
   params:
     - name: code
-      value: 01-teste
+      value: amostra1
       type: query
   auth: inherit
 

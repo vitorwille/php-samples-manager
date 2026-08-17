@@ -10,9 +10,8 @@ http:
     type: json
     data: |-
       {
-        "sampleCode": "amostra02",
-        "sampleStatus": "concluida",
-        "sampleConclusionDate": "2026-08-25"
+        "sampleCode": "amostra06",
+        "sampleStatus": "em_analise"
       }
   auth: inherit
 

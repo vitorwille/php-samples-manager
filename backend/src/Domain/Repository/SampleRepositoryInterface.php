@@ -26,6 +26,8 @@ interface SampleRepositoryInterface
      */
     public function findBySampleType(SampleType $sampleType): array;
 
+    public function getNextSequencial(string $prefix, int $year): int;
+
     public function createSample(string $sampleCode, SampleType $sampleType, SampleStatus $sampleStatus, ?string $sampleTechnician, DateTime $sampleReceivalDate, ?DateTime $sampleConclusionDate): Sample;
 
     public function updateSampleStatus(string $sampleCode, SampleStatus $sampleStatus, ?DateTime $sampleConclusionDate = null): Sample;

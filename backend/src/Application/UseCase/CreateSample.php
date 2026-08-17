@@ -10,18 +10,20 @@ use DateTime;
 
 final class CreateSample
 {
+    private const PREFIX = 'CANDXXX';
+
     public function __construct(
         private readonly SampleRepositoryInterface $samples
     ) {}
 
-    public function handle(string $sampleCode, SampleType $sampleType, SampleStatus $sampleStatus, ?string $sampleTechnician, DateTime $sampleReceivalDate, ?DateTime $sampleConclusionDate): Sample
+    public function handle(SampleType $sampleType, SampleStatus $sampleStatus, ?string $sampleTechnician, DateTime $sampleReceivalDate, ?DateTime $sampleConclusionDate): Sample
     {
-        if (trim($sampleCode) === '') {
-            throw new \InvalidArgumentException('Missing required field: "sampleCode".');
-        }
+        $year = (int) $sampleReceivalDate->format('Y');
+        $sequencial = $this->samples->getNextSequencial(self::PREFIX, $year);
+        $sampleCode = self::PREFIX . '-' . $year . '-' . str_pad((string) $sequencial, 6, '0', STR_PAD_LEFT);
 
         return $this->samples->createSample(
-            trim($sampleCode),
+            $sampleCode,
             $sampleType,
             $sampleStatus,
             $sampleTechnician,

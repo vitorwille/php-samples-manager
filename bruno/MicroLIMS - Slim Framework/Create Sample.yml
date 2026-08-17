@@ -10,7 +10,6 @@ http:
     type: json
     data: |-
       {
-      "sampleCode": "amostra03",
       "sampleType": "efluente",
       "sampleTechnician": "Vitor",
       "sampleReceivalDate": "2026-08-14"
