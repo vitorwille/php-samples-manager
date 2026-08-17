@@ -21,19 +21,13 @@ final class UpdateSampleStatus
             throw new \InvalidArgumentException('Sample not found');
         }
 
-        if ($sample->sampleStatus() === SampleStatus::REJEITADA) {
-            throw new \InvalidArgumentException('Sample is already in "rejeitada" status.');
+        if (in_array($sample->sampleStatus(), [SampleStatus::CONCLUIDA, SampleStatus::REJEITADA], true)) {
+            throw new \InvalidArgumentException('Sample is in a final status and cannot be changed.');
         }
 
         if ($sampleStatus === SampleStatus::EM_ANALISE) {  // deve ter um tecnico cadastrado
-            if (trim($sample->sampleTechnician()) === '') {
+            if (trim($sample->sampleTechnician() ?? '') === '') {
                 throw new \InvalidArgumentException('sampleTechnician is required to set status to em_analise');
-            }
-        }
-
-        if ($sampleStatus === SampleStatus::CONCLUIDA || $sampleStatus === SampleStatus::REJEITADA) {
-            if (in_array($sample->sampleStatus()->value, ['concluida', 'rejeitada'], true)) {
-                throw new \InvalidArgumentException('Sample is already in "concluida" or "rejeitada" status');
             }
         }
 
@@ -52,10 +46,6 @@ final class UpdateSampleStatus
         }
 
         if ($sampleStatus === SampleStatus::REJEITADA) {
-            if ($sample->sampleStatus()->value === 'concluida') {
-                throw new \InvalidArgumentException('Sample cannot be rejected if it is already in "concluida" status.');
-            }
-
             if ($sampleConclusionDate === null) {
                 throw new \InvalidArgumentException('Sample must have a conclusion date to be set to "rejeitada".');
             }
