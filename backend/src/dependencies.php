@@ -9,6 +9,7 @@ use App\Application\UseCase\GetAllUsers;
 use App\Application\UseCase\LoginUser;
 use App\Application\UseCase\SearchSamplesByCode;
 use App\Application\UseCase\UpdateSampleStatus;
+use App\Application\UseCase\UpdateSampleTechnician;
 use App\Domain\Repository\SampleRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
 use App\Infrastructure\Controller\AuthController;
@@ -45,6 +46,7 @@ return static function (ContainerInterface $container): void {
     $container->set(SearchSamplesByCode::class, fn(ContainerInterface $c) => new SearchSamplesByCode($c->get(SampleRepositoryInterface::class)));
     $container->set(CreateSample::class, fn(ContainerInterface $c) => new CreateSample($c->get(SampleRepositoryInterface::class)));
     $container->set(UpdateSampleStatus::class, fn(ContainerInterface $c) => new UpdateSampleStatus($c->get(SampleRepositoryInterface::class)));
+    $container->set(UpdateSampleTechnician::class, fn(ContainerInterface $c) => new UpdateSampleTechnician($c->get(SampleRepositoryInterface::class)));
 
     $container->set(AuthController::class, fn(ContainerInterface $c) => new AuthController($c->get(LoginUser::class)));
     $container->set(UserController::class, fn(ContainerInterface $c) => new UserController($c->get(GetAllUsers::class), $c->get(CreateUser::class)));
@@ -55,5 +57,6 @@ return static function (ContainerInterface $container): void {
         $c->get(SearchSamplesByCode::class),
         $c->get(CreateSample::class),
         $c->get(UpdateSampleStatus::class),
+        $c->get(UpdateSampleTechnician::class),
     ));
 };

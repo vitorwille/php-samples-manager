@@ -69,7 +69,7 @@ final class MySqlSampleRepository implements SampleRepositoryInterface
         return $samples;
     }
 
-    public function createSample(string $sampleCode, SampleType $sampleType, SampleStatus $sampleStatus, string $sampleTechnician, DateTime $sampleReceivalDate, ?DateTime $sampleConclusionDate): Sample
+    public function createSample(string $sampleCode, SampleType $sampleType, SampleStatus $sampleStatus, ?string $sampleTechnician, DateTime $sampleReceivalDate, ?DateTime $sampleConclusionDate): Sample
     {
         $stmt = $this->pdo->prepare(
             'INSERT INTO samples (sample_code, sample_type, sample_status, sample_technician, sample_receival_date, sample_conclusion_date)
@@ -105,6 +105,20 @@ final class MySqlSampleRepository implements SampleRepositoryInterface
             $sampleConclusionDate?->format('Y-m-d H:i:s'),
             $sampleCode,
         ]);
+
+        $sample = $this->findBySampleCode($sampleCode);
+
+        if (!$sample) {
+            throw new \InvalidArgumentException('Sample not found');
+        }
+
+        return $sample;
+    }
+
+    public function updateSampleTechnician(string $sampleCode, string $sampleTechnician): Sample
+    {
+        $stmt = $this->pdo->prepare('UPDATE samples SET sample_technician = ? WHERE sample_code = ?');
+        $stmt->execute([$sampleTechnician, $sampleCode]);
 
         $sample = $this->findBySampleCode($sampleCode);
 
