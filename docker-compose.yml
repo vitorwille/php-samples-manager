@@ -31,5 +31,18 @@ services:
       microlims-db:
         condition: service_healthy
 
+  microlims-frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NODE_ENV: development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - microlims-api
 volumes:
   db_data:
