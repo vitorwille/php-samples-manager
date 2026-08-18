@@ -292,6 +292,23 @@ final class UpdateSampleStatusTest extends TestCase
         $this->useCase->handle('LAB-001', SampleStatus::REJEITADA, new DateTime('2026-08-10'));
     }
 
+    public function testRejeitadaAcceptsDateEqualToReceival(): void
+    {
+        $sample = (new SampleBuilder())
+            ->withStatus(SampleStatus::EM_ANALISE)
+            ->withReceivalDate('2026-08-15')
+            ->build();
+
+        $this->repo->method('findBySampleCode')->willReturn($sample);
+        $this
+            ->repo
+            ->expects($this->once())
+            ->method('updateSampleStatus')
+            ->willReturn($sample);
+
+        $this->useCase->handle('LAB-001', SampleStatus::REJEITADA, new DateTime('2026-08-15'));
+    }
+
     public function testRejeitadaSucceedsWithValidData(): void
     {
         $sample = (new SampleBuilder())
