@@ -113,13 +113,15 @@ export default function Home() {
     }, 180);
   }
 
-  const loadSamples = useCallback(async () => {
+  const loadSamples = useCallback(async (overrides?: { searchCode?: string; searchType?: string }) => {
     setLoading(true);
     setError("");
     try {
       const params: { code?: string; search?: string; type?: string } = {};
-      if (appliedSearchCode) params.search = appliedSearchCode;
-      if (appliedSearchType) params.type = appliedSearchType;
+      const code = overrides?.searchCode ?? appliedSearchCode;
+      const type = overrides?.searchType ?? appliedSearchType;
+      if (code) params.search = code;
+      if (type) params.type = type;
       const data = await fetchSamples(Object.keys(params).length ? params : undefined);
       setSamples(data);
     } catch {
@@ -192,7 +194,7 @@ export default function Home() {
     setAppliedSearchType(searchType);
     setAppliedSearchCode(searchCode);
     setPage(1);
-    loadSamples();
+    loadSamples({ searchCode, searchType });
   }
 
   async function sampleNextStatus(sample: Sample, conclusion?: string) {
