@@ -351,50 +351,50 @@ export default function Home() {
                 {loading ? (
                   // skeleton
                   Array.from({ length: PER_PAGE }).map((_, i) => (
-                    <tr key={`loading-${i}`} className="border-b border-border last:border-b-0 h-[52.55px]">
-                      <td className="px-4 py-3"><div className="h-3 bg-gray-200 rounded animate-pulse w-16" /></td>
-                      <td className="px-4 py-3"><div className="h-3 bg-gray-200 rounded animate-pulse w-14" /></td>
-                      <td className="px-4 py-3"><div className="h-3 bg-gray-200 rounded animate-pulse w-20" /></td>
-                      <td className="px-4 py-3"><div className="h-3 bg-gray-200 rounded animate-pulse w-28" /></td>
-                      <td className="px-4 py-3"><div className="h-3 bg-gray-200 rounded animate-pulse w-16" /></td>
-                      <td className="px-4 py-3"><div className="h-3 bg-gray-200 rounded animate-pulse w-24" /></td>
-                      <td className="px-4 py-3"><div className="h-3 bg-gray-200 rounded animate-pulse w-20" /></td>
+                      <tr key={`loading-${i}`} className="border-b border-border last:border-b-0">
+                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-16" /></td>
+                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-14" /></td>
+                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-20" /></td>
+                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-28" /></td>
+                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-16" /></td>
+                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-24" /></td>
+                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-20" /></td>
                     </tr>
                   ))
                 ) : (
                   paddedPaged.map((s, i) => {
                     if (!s) {
                       return (
-                        <tr key={`empty-${i}`} className="border-b border-border last:border-b-0 h-[51.60px]">
-                          <td className="px-4 py-3">&nbsp;</td>
-                          <td className="px-4 py-3">&nbsp;</td>
-                          <td className="px-4 py-3">&nbsp;</td>
-                          <td className="px-4 py-3">&nbsp;</td>
-                          <td className="px-4 py-3">&nbsp;</td>
-                          <td className="px-4 py-3">&nbsp;</td>
-                          <td className="px-4 py-3">&nbsp;</td>
+                        <tr key={`empty-${i}`} className="border-b border-border last:border-b-0">
+                          <td className="px-4 py-3 h-12">&nbsp;</td>
+                          <td className="px-4 py-3 h-12">&nbsp;</td>
+                          <td className="px-4 py-3 h-12">&nbsp;</td>
+                          <td className="px-4 py-3 h-12">&nbsp;</td>
+                          <td className="px-4 py-3 h-12">&nbsp;</td>
+                          <td className="px-4 py-3 h-12">&nbsp;</td>
+                          <td className="px-4 py-3 h-12">&nbsp;</td>
                         </tr>
                       );
                     }
                     const st = STATUS_MAP[s.sampleStatus] || STATUS_MAP.recebida;
                     return (
-                      <tr key={s.id} className="border-b border-border last:border-b-0 hover:bg-gray-50 h-[52px]">
-                        <td className="px-4 py-3 font-medium truncate">{s.sampleCode}</td>
-                        <td className="px-4 py-3 text-gray-600 truncate">{TYPE_MAP[s.sampleType] || s.sampleType}</td>
-                        <td className="px-4 py-3 truncate">{formatDate(s.sampleReceivalDate)}</td>
-                        <td className="px-4 py-3 text-gray-600 truncate">{s.sampleTechnician || <span className="text-gray-400/80">(não informado)</span>}</td>
-                        <td className="px-4 py-3 truncate">
+                      <tr key={s.id} className="border-b border-border last:border-b-0 hover:bg-gray-50 h-12">
+                        <td className="px-4 py-0 font-medium truncate">{s.sampleCode}</td>
+                        <td className="px-4 py-0 text-gray-600 truncate">{TYPE_MAP[s.sampleType] || s.sampleType}</td>
+                        <td className="px-4 py-0 truncate">{formatDate(s.sampleReceivalDate)}</td>
+                        <td className="px-4 py-0 text-gray-600 truncate">{s.sampleTechnician || <span className="text-gray-400/80">(não informado)</span>}</td>
+                        <td className="px-4 py-0 truncate">
                           <span className={`inline-flex items-center gap-1.5 px-3 py-1 border-1 rounded-full text-xs font-medium ${st.bg} ${st.color}`}>
                             <span className="w-1.5 h-1.5 rounded-full bg-current" />
                             {st.label}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-gray-500 text-xs truncate">
+                        <td className="px-4 py-0 text-gray-500 text-xs truncate">
                           Recebimento: {s.sampleTechnician ? formatDate(s.sampleReceivalDate) : "-"}
                           {" | "}
                           Conclusão: {s.sampleConclusionDate ? formatDate(s.sampleConclusionDate) : "-"}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-0">
                           <div className="flex items-center justify-end gap-2">
                             {(s.sampleStatus === "recebida" || s.sampleStatus === "em_analise") && (
                               <div className="relative">
