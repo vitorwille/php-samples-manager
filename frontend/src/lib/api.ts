@@ -88,3 +88,22 @@ export async function updateSample(data: {
   }
   return res.json();
 }
+
+export async function createSample(data: {
+  sampleType: string;
+  sampleTechnician?: string;
+  sampleReceivalDate: string;
+}): Promise<Sample> {
+  const res = await fetch(`${API_URL}/api/samples`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to create sample');
+  }
+  return res.json();
+}

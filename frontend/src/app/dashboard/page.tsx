@@ -520,8 +520,10 @@ export default function Home() {
               Filtrar
             </button>
           </div>
-          {/* TODO: criar tela de cadastro de amostra */}
-          <button className="w-full bg-primary text-white rounded-xl px-4 py-3 text-sm font-medium hover:bg-primary-light hover:scale-102 transition-all duration-250 flex items-center justify-center gap-2 cursor-pointer">
+          <button
+            onClick={() => router.push("/dashboard/new-sample")}
+            className="w-full bg-primary text-white rounded-xl px-4 py-3 text-sm font-medium hover:bg-primary-light hover:scale-102 transition-all duration-250 flex items-center justify-center gap-2 cursor-pointer"
+          >
             <Plus className="w-5 h-5" />
             Cadastrar nova amostra
           </button>
