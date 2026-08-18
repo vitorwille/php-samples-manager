@@ -62,11 +62,44 @@ export default function Home() {
   const [technicianName, setTechnicianName] = useState("");
   const [modalError, setModalError] = useState("");
   const [modalLoading, setModalLoading] = useState(false);
+  const [isClosingModal, setIsClosingModal] = useState(false);
 
   // data de conclusao
   const [conclusionModalSample, setConclusionModalSample] = useState<Sample | null>(null);
   const [conclusionDate, setConclusionDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [conclusionLoading, setConclusionLoading] = useState(false);
+  const [isClosingConclusionModal, setIsClosingConclusionModal] = useState(false);
+
+  // rejeicao
+  const [rejectModalSample, setRejectModalSample] = useState<Sample | null>(null);
+  const [rejectDate, setRejectDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [rejectLoading, setRejectLoading] = useState(false);
+  const [isClosingRejectModal, setIsClosingRejectModal] = useState(false);
+
+  function closeModal() {
+    setIsClosingModal(true);
+    setTimeout(() => {
+      setModalSample(null);
+      setIsClosingModal(false);
+    }, 180);
+  }
+
+  function closeConclusionModal() {
+    setIsClosingConclusionModal(true);
+    setTimeout(() => {
+      setConclusionModalSample(null);
+      setIsClosingConclusionModal(false);
+    }, 180);
+  }
+
+  function closeRejectModal() {
+    setIsClosingRejectModal(true);
+    setTimeout(() => {
+      setRejectModalSample(null);
+      setIsClosingRejectModal(false);
+    }, 180);
+  }
+
   const loadSamples = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -177,10 +210,28 @@ export default function Home() {
     setConclusionLoading(true);
     try {
       await sampleNextStatus(conclusionModalSample, conclusionDate);
-      setConclusionModalSample(null);
+      closeConclusionModal();
     } catch {
     } finally {
       setConclusionLoading(false);
+    }
+  }
+
+  async function handleRejectConfirm() {
+    if (!rejectModalSample) return;
+    setRejectLoading(true);
+    try {
+      await updateSample({
+        sampleCode: rejectModalSample.sampleCode,
+        sampleStatus: "rejeitada",
+        sampleConclusionDate: rejectDate,
+      });
+      closeRejectModal();
+      loadSamples();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Erro ao rejeitar amostra");
+    } finally {
+      setRejectLoading(false);
     }
   }
 
@@ -197,7 +248,7 @@ export default function Home() {
         sampleTechnician: technicianName.trim(),
       });
       await sampleNextStatus(modalSample);
-      setModalSample(null);
+      closeModal();
     } catch (e: unknown) {
       setModalError(e instanceof Error ? e.message : "Erro ao salvar");
     } finally {
@@ -206,17 +257,9 @@ export default function Home() {
   }
 
   // rejeitar amostra e preencher data de conclusao
-  async function handleReject(sample: Sample) {
-    try {
-      await updateSample({
-        sampleCode: sample.sampleCode,
-        sampleStatus: "rejeitada",
-        sampleConclusionDate: new Date().toISOString().split("T")[0],
-      });
-      loadSamples();
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Erro ao rejeitar amostra");
-    }
+  function handleReject(sample: Sample) {
+    setRejectModalSample(sample);
+    setRejectDate(new Date().toISOString().split("T")[0]);
   }
 
   // yyyy-mm-dd -> dd/mm/yyyy
@@ -238,9 +281,11 @@ export default function Home() {
       setModalSample(sample);
       setTechnicianName("");
       setModalError("");
-    } else {
+    } else if (sample.sampleStatus === "em_analise") {
       setConclusionModalSample(sample);
       setConclusionDate(new Date().toISOString().split("T")[0]);
+    } else {
+      sampleNextStatus(sample);
     }
   }
 
@@ -286,7 +331,7 @@ export default function Home() {
                   <th className="px-4 py-3 text-right w-[13%]">Ação</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody key={page} className="animate-fade-in">
                 {loading ? (
                   // skeleton
                   Array.from({ length: PER_PAGE }).map((_, i) => (
@@ -348,7 +393,7 @@ export default function Home() {
                                     {/* fechar dropdown clicando fora */}
                                     <div className="fixed inset-0 z-50" onClick={() => setOpenDropdown(null)} />
                                     {/* posicao dropdown */}
-                                    <div className="fixed w-44 bg-white border border-border rounded-lg shadow-lg z-50 py-1" style={{ top: dropdownPos.top, right: dropdownPos.right }}>
+                                    <div className="fixed w-44 bg-white border border-border rounded-lg shadow-lg z-999 py-1 origin-top-right animate-scale-in" style={{ top: dropdownPos.top, right: dropdownPos.right }}>
                                       {s.sampleStatus === "recebida" ? (
                                         <button
                                           onClick={() => handleSampleNextStep(s)}
@@ -468,8 +513,14 @@ export default function Home() {
 
         {/* modal responsavel */}
         {modalSample && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-5 !pt-4 w-full max-w-sm">
+          <div
+            className={`fixed inset-0 bg-black/50 flex items-center justify-center z-50 ${isClosingModal ? "animate-fade-out" : "animate-fade-in"}`}
+            onClick={closeModal}
+          >
+            <div
+              className={`bg-white rounded-xl p-5 !pt-4 w-full max-w-sm origin-center ${isClosingModal ? "animate-scale-out" : "animate-scale-in"}`}
+              onClick={(e) => e.stopPropagation()}
+            >
               <h3 className="font-semibold text-primary mb-2"><OctagonAlert className="mb-0.75 h-5 w-5 inline-flex text-red-600 mr-2" />Responsável técnico não informado</h3>
               <p className="text-xs text-gray-500 mb-4">
                 Informe o nome do responsável técnico para avançar o status da amostra <strong>{modalSample.sampleCode}</strong>.
@@ -490,7 +541,7 @@ export default function Home() {
 
               <div className="flex justify-end gap-2">
                 <button
-                  onClick={() => setModalSample(null)}
+                  onClick={closeModal}
                   className="px-4 py-2 text-sm text-gray-500 hover:bg-gray-200 rounded-lg transition-all duration-200 cursor-pointer"
                 >
                   Cancelar
@@ -509,8 +560,14 @@ export default function Home() {
 
         {/* modal conclusao */}
         {conclusionModalSample && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-lg p-5 !pt-4 w-full max-w-sm">
+          <div
+            className={`fixed inset-0 bg-black/40 flex items-center justify-center z-50 ${isClosingConclusionModal ? "animate-fade-out" : "animate-fade-in"}`}
+            onClick={closeConclusionModal}
+          >
+            <div
+              className={`bg-white rounded-xl shadow-lg p-5 !pt-4 w-full max-w-sm origin-center ${isClosingConclusionModal ? "animate-scale-out" : "animate-scale-in"}`}
+              onClick={(e) => e.stopPropagation()}
+            >
               <h3 className="font-semibold text-primary mb-2"><CalendarCheck className="mb-1 h-5 w-5 inline-flex text-blue-500 mr-2" />Data de conclusão</h3>
               <p className="text-xs text-gray-500 mb-4">
                 Informe a data de conclusão da amostra <strong>{conclusionModalSample.sampleCode}</strong>.
@@ -525,7 +582,7 @@ export default function Home() {
 
               <div className="flex justify-end gap-2">
                 <button
-                  onClick={() => setConclusionModalSample(null)}
+                  onClick={closeConclusionModal}
                   className="px-4 py-2 text-sm text-gray-500 hover:bg-gray-200 rounded-lg transition-all cursor-pointer"
                 >
                   Cancelar
@@ -536,6 +593,41 @@ export default function Home() {
                   className="px-4 py-2 text-sm bg-primary-light text-white rounded-lg hover:scale-104 transition-all disabled:opacity-70 cursor-pointer"
                 >
                   {conclusionLoading ? "Salvando..." : "Confirmar"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* modal rejeicao */}
+        {rejectModalSample && (
+          <div className={`fixed inset-0 bg-black/40 flex items-center justify-center z-50 ${isClosingRejectModal ? "animate-fade-out" : "animate-fade-in"}`}>
+            <div className={`bg-white rounded-xl shadow-lg p-5 !pt-4 w-full max-w-sm origin-center ${isClosingRejectModal ? "animate-scale-out" : "animate-scale-in"}`}>
+              <h3 className="font-semibold text-primary mb-2"><Shredder className="mb-1 h-5 w-5 inline-flex text-red-600 mr-2" />Rejeitar amostra</h3>
+              <p className="text-xs text-gray-500 mb-4">
+                Informe a data de conclusão para rejeitar a amostra <strong>{rejectModalSample.sampleCode}</strong>.
+              </p>
+
+              <input
+                type="date"
+                value={rejectDate}
+                onChange={(e) => setRejectDate(e.target.value)}
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
+              />
+
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={closeRejectModal}
+                  className="px-4 py-2 text-sm text-gray-500 hover:bg-gray-200 rounded-lg transition-all cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleRejectConfirm}
+                  disabled={!rejectDate || rejectLoading}
+                  className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:scale-104 transition-all disabled:opacity-70 cursor-pointer"
+                >
+                  {rejectLoading ? "Salvando..." : "Confirmar"}
                 </button>
               </div>
             </div>

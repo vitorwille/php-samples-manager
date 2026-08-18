@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [animKey, setAnimKey] = useState(0);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -120,7 +121,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form key={animKey} onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
             {!isLogin && (
               <div>
                 <label className="text-[11px] font-semibold text-slate-600 tracking-wider uppercase mb-1.5 flex items-center gap-1.5">
@@ -179,6 +180,7 @@ export default function LoginPage() {
             <button
               onClick={() => {
                 setIsLogin(!isLogin);
+                setAnimKey((k) => k + 1);
                 setError("");
                 setName("");
                 setEmail("");
