@@ -315,138 +315,162 @@ export default function Home() {
           )}
 
           <div className="bg-white rounded-xl overflow-hidden">
-            <table className="w-full text-sm table-fixed">
-              <thead>
-                <tr className="border-b border-border text-left text-gray-500 text-xs h-10 uppercase">
-                  <th className="px-4 py-3 w-[14%]">
-                    <button onClick={() => handleSort("sampleCode")} className="cursor-pointer flex items-center uppercase">
-                      Código <SortIcon col="sampleCode" />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 w-[10%]">
-                    <button onClick={() => handleSort("sampleType")} className="cursor-pointer flex items-center uppercase">
-                      Análise <SortIcon col="sampleType" />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 w-[10%]">
-                    <button onClick={() => handleSort("sampleReceivalDate")} className="cursor-pointer flex items-center uppercase">
-                      Coleta <SortIcon col="sampleReceivalDate" />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 w-[18%]">
-                    <button onClick={() => handleSort("sampleTechnician")} className="cursor-pointer flex items-center uppercase">
-                      Responsável Técnico <SortIcon col="sampleTechnician" />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 w-[12%]">
-                    <button onClick={() => handleSort("sampleStatus")} className="cursor-pointer flex items-center uppercase">
-                      Status <SortIcon col="sampleStatus" />
-                    </button>
-                  </th>
-                  <th className="px-4 py-3 w-[24%]">Histórico da Amostra</th>
-                  <th className="px-4 py-3 text-right w-[13%]">Ação</th>
-                </tr>
-              </thead>
-              <tbody key={page} className="animate-fade-in">
-                {loading ? (
-                  // skeleton
-                  Array.from({ length: PER_PAGE }).map((_, i) => (
-                      <tr key={`loading-${i}`} className="border-b border-border last:border-b-0">
-                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-16" /></td>
-                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-14" /></td>
-                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-20" /></td>
-                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-28" /></td>
-                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-16" /></td>
-                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-24" /></td>
-                        <td className="px-4 py-3 h-12"><div className="h-3 bg-gray-200 rounded animate-pulse w-20" /></td>
-                    </tr>
-                  ))
-                ) : (
-                  paddedPaged.map((s, i) => {
-                    if (!s) {
+            {/* tabela sem amostra */}
+            {!loading && filtered.length === 0 ? (
+              <table className="w-full text-sm table-fixed">
+                <thead>
+                  <tr className="border-b border-border text-left text-gray-500 text-xs h-10 uppercase">
+                    <th className="px-4 py-3 w-[14%]">Código</th>
+                    <th className="px-4 py-3 w-[10%]">Análise</th>
+                    <th className="px-4 py-3 w-[10%]">Coleta</th>
+                    <th className="px-4 py-3 w-[18%]">Responsável Técnico</th>
+                    <th className="px-4 py-3 w-[12%]">Status</th>
+                    <th className="px-4 py-3 w-[24%]">Histórico da Amostra</th>
+                    <th className="px-4 py-3 text-right w-[13%]">Ação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colSpan={7} className="h-[576px] text-center text-gray-400 text-[16px]">
+                      Nenhuma amostra encontrada.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <table className="w-full text-sm table-fixed">
+                <thead>
+                  <tr className="border-b border-border text-left text-gray-500 text-xs h-10 uppercase">
+                    <th className="px-4 py-3 w-[14%]">
+                      <button onClick={() => handleSort("sampleCode")} className="cursor-pointer flex items-center uppercase">
+                        Código <SortIcon col="sampleCode" />
+                      </button>
+                    </th>
+                    <th className="px-4 py-3 w-[10%]">
+                      <button onClick={() => handleSort("sampleType")} className="cursor-pointer flex items-center uppercase">
+                        Análise <SortIcon col="sampleType" />
+                      </button>
+                    </th>
+                    <th className="px-4 py-3 w-[10%]">
+                      <button onClick={() => handleSort("sampleReceivalDate")} className="cursor-pointer flex items-center uppercase">
+                        Coleta <SortIcon col="sampleReceivalDate" />
+                      </button>
+                    </th>
+                    <th className="px-4 py-3 w-[18%]">
+                      <button onClick={() => handleSort("sampleTechnician")} className="cursor-pointer flex items-center uppercase">
+                        Responsável Técnico <SortIcon col="sampleTechnician" />
+                      </button>
+                    </th>
+                    <th className="px-4 py-3 w-[12%]">
+                      <button onClick={() => handleSort("sampleStatus")} className="cursor-pointer flex items-center uppercase">
+                        Status <SortIcon col="sampleStatus" />
+                      </button>
+                    </th>
+                    <th className="px-4 py-3 w-[24%]">Histórico da Amostra</th>
+                    <th className="px-4 py-3 text-right w-[13%]">Ação</th>
+                  </tr>
+                </thead>
+                <tbody key={page} className="animate-fade-in">
+                  {loading ? (
+                    // skeleton
+                    Array.from({ length: PER_PAGE }).map((_, i) => (
+                      <tr key={`loading-${i}`} className="border-b border-border last:border-b-0 h-12">
+                        <td className="px-4 py-0"><div className="h-3 bg-gray-200 rounded animate-pulse w-16" /></td>
+                        <td className="px-4 py-0"><div className="h-3 bg-gray-200 rounded animate-pulse w-14" /></td>
+                        <td className="px-4 py-0"><div className="h-3 bg-gray-200 rounded animate-pulse w-20" /></td>
+                        <td className="px-4 py-0"><div className="h-3 bg-gray-200 rounded animate-pulse w-28" /></td>
+                        <td className="px-4 py-0"><div className="h-3 bg-gray-200 rounded animate-pulse w-16" /></td>
+                        <td className="px-4 py-0"><div className="h-3 bg-gray-200 rounded animate-pulse w-24" /></td>
+                        <td className="px-4 py-0"><div className="h-3 bg-gray-200 rounded animate-pulse w-20" /></td>
+                      </tr>
+                    ))
+                  ) : (
+                    paddedPaged.map((s, i) => {
+                      if (!s) {
+                        return (
+                          <tr key={`empty-${i}`} className="border-b border-border last:border-b-0 h-12">
+                            <td className="px-4 py-0">&nbsp;</td>
+                            <td className="px-4 py-0">&nbsp;</td>
+                            <td className="px-4 py-0">&nbsp;</td>
+                            <td className="px-4 py-0">&nbsp;</td>
+                            <td className="px-4 py-0">&nbsp;</td>
+                            <td className="px-4 py-0">&nbsp;</td>
+                            <td className="px-4 py-0">&nbsp;</td>
+                          </tr>
+                        );
+                      }
+                      const st = STATUS_MAP[s.sampleStatus] || STATUS_MAP.recebida;
                       return (
-                        <tr key={`empty-${i}`} className="border-b border-border last:border-b-0">
-                          <td className="px-4 py-3 h-12">&nbsp;</td>
-                          <td className="px-4 py-3 h-12">&nbsp;</td>
-                          <td className="px-4 py-3 h-12">&nbsp;</td>
-                          <td className="px-4 py-3 h-12">&nbsp;</td>
-                          <td className="px-4 py-3 h-12">&nbsp;</td>
-                          <td className="px-4 py-3 h-12">&nbsp;</td>
-                          <td className="px-4 py-3 h-12">&nbsp;</td>
+                        <tr key={s.id} className="border-b border-border last:border-b-0 hover:bg-gray-50 h-12">
+                          <td className="px-4 py-0 font-medium truncate">{s.sampleCode}</td>
+                          <td className="px-4 py-0 text-gray-600 truncate">{TYPE_MAP[s.sampleType] || s.sampleType}</td>
+                          <td className="px-4 py-0 truncate">{formatDate(s.sampleReceivalDate)}</td>
+                          <td className="px-4 py-0 text-gray-600 truncate">{s.sampleTechnician || <span className="text-gray-400/80">(não informado)</span>}</td>
+                          <td className="px-4 py-0 truncate">
+                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 border-1 rounded-full text-xs font-medium ${st.bg} ${st.color}`}>
+                              <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                              {st.label}
+                            </span>
+                          </td>
+                          <td className="px-4 py-0 text-gray-500 text-xs truncate">
+                            Recebimento: {s.sampleTechnician ? formatDate(s.sampleReceivalDate) : "-"}
+                            {" | "}
+                            Conclusão: {s.sampleConclusionDate ? formatDate(s.sampleConclusionDate) : "-"}
+                          </td>
+                          <td className="px-4 py-0">
+                            <div className="flex items-center justify-end gap-2">
+                              {(s.sampleStatus === "recebida" || s.sampleStatus === "em_analise") && (
+                                <div className="relative">
+                                  <button
+                                    onClick={(e) => openActionDropdown(e, s.id)}
+                                    className="text-xs text-gray-500 hover:text-primary rounded-lg px-3 py-1.5 bg-gray-200/70 hover:bg-gray-300 transition-all duration-250 cursor-pointer"
+                                  >
+                                    Avançar status <ChevronDown className="h-4 w-4 mb-0.25 inline-flex" />
+                                  </button>
+                                  {openDropdown === s.id && (
+                                    <>
+                                      {/* fechar dropdown clicando fora */}
+                                      <div className="fixed inset-0 z-50" onClick={() => setOpenDropdown(null)} />
+                                      {/* posicao dropdown */}
+                                      <div className="fixed w-44 bg-white border border-border rounded-lg shadow-lg z-999 py-1 origin-top-right animate-scale-in" style={{ top: dropdownPos.top, right: dropdownPos.right }}>
+                                        {s.sampleStatus === "recebida" ? (
+                                          <button
+                                            onClick={() => handleSampleNextStep(s)}
+                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 flex items-center gap-2 cursor-pointer"
+                                          >
+                                            <FlaskConical className="w-4 h-4 text-primary" />
+                                            Iniciar análise
+                                          </button>
+                                        ) : (
+                                          <button
+                                            onClick={() => handleSampleNextStep(s)}
+                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 flex items-center gap-2 cursor-pointer"
+                                          >
+                                            <ClipboardCheck className="w-4 h-4 text-primary" />
+                                            Concluir amostra
+                                          </button>
+                                        )}
+                                        <button
+                                          onClick={() => { setOpenDropdown(null); handleReject(s); }}
+                                          className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-600 hover:text-white flex items-center gap-2 cursor-pointer"
+                                        >
+                                          <Shredder className="w-4 h-4" />
+                                          Rejeitar amostra
+                                        </button>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </td>
                         </tr>
                       );
-                    }
-                    const st = STATUS_MAP[s.sampleStatus] || STATUS_MAP.recebida;
-                    return (
-                      <tr key={s.id} className="border-b border-border last:border-b-0 hover:bg-gray-50 h-12">
-                        <td className="px-4 py-0 font-medium truncate">{s.sampleCode}</td>
-                        <td className="px-4 py-0 text-gray-600 truncate">{TYPE_MAP[s.sampleType] || s.sampleType}</td>
-                        <td className="px-4 py-0 truncate">{formatDate(s.sampleReceivalDate)}</td>
-                        <td className="px-4 py-0 text-gray-600 truncate">{s.sampleTechnician || <span className="text-gray-400/80">(não informado)</span>}</td>
-                        <td className="px-4 py-0 truncate">
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 border-1 rounded-full text-xs font-medium ${st.bg} ${st.color}`}>
-                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                            {st.label}
-                          </span>
-                        </td>
-                        <td className="px-4 py-0 text-gray-500 text-xs truncate">
-                          Recebimento: {s.sampleTechnician ? formatDate(s.sampleReceivalDate) : "-"}
-                          {" | "}
-                          Conclusão: {s.sampleConclusionDate ? formatDate(s.sampleConclusionDate) : "-"}
-                        </td>
-                        <td className="px-4 py-0">
-                          <div className="flex items-center justify-end gap-2">
-                            {(s.sampleStatus === "recebida" || s.sampleStatus === "em_analise") && (
-                              <div className="relative">
-                                <button
-                                  onClick={(e) => openActionDropdown(e, s.id)}
-                                  className="text-xs text-gray-500 hover:text-primary rounded-lg px-3 py-1.5 bg-gray-200/70 hover:bg-gray-300 transition-all duration-250 cursor-pointer"
-                                >
-                                  Avançar status <ChevronDown className="h-4 w-4 mb-0.25 inline-flex" />
-                                </button>
-                                {openDropdown === s.id && (
-                                  <>
-                                    {/* fechar dropdown clicando fora */}
-                                    <div className="fixed inset-0 z-50" onClick={() => setOpenDropdown(null)} />
-                                    {/* posicao dropdown */}
-                                    <div className="fixed w-44 bg-white border border-border rounded-lg shadow-lg z-999 py-1 origin-top-right animate-scale-in" style={{ top: dropdownPos.top, right: dropdownPos.right }}>
-                                      {s.sampleStatus === "recebida" ? (
-                                        <button
-                                          onClick={() => handleSampleNextStep(s)}
-                                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 flex items-center gap-2 cursor-pointer"
-                                        >
-                                          <FlaskConical className="w-4 h-4 text-primary" />
-                                          Iniciar análise
-                                        </button>
-                                      ) : (
-                                        <button
-                                          onClick={() => handleSampleNextStep(s)}
-                                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 flex items-center gap-2 cursor-pointer"
-                                        >
-                                          <ClipboardCheck className="w-4 h-4 text-primary" />
-                                          Concluir amostra
-                                        </button>
-                                      )}
-                                      <button
-                                        onClick={() => { setOpenDropdown(null); handleReject(s); }}
-                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-600 hover:text-white flex items-center gap-2 cursor-pointer"
-                                      >
-                                        <Shredder className="w-4 h-4" />
-                                        Rejeitar amostra
-                                      </button>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                    })
+                  )}
+                </tbody>
+              </table>
+            )}
           </div>
 
           <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
