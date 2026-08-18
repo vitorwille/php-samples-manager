@@ -11,7 +11,7 @@ export interface Sample {
 }
 
 export async function checkSession(): Promise<boolean> {
-  const res = await fetch(`${API_URL}/api/users`, { credentials: 'include' });
+  const res = await fetch(`${API_URL}/api/users/verify`, { credentials: 'include' });
   return res.ok;
 }
 
@@ -23,6 +23,24 @@ export async function login(email: string, password: string): Promise<boolean> {
     body: JSON.stringify({ email, password }),
   });
   return res.ok;
+}
+
+export async function register(name: string, email: string, password: string): Promise<{ ok: boolean; error?: string }> {
+  if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(name.trim())) {
+    return { ok: false, error: 'O campo "Nome" deve conter apenas letras.' };
+  }
+
+  const res = await fetch(`${API_URL}/api/users`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ name, email, password }),
+  });
+  if (!res.ok) {
+    const data = await res.json();
+    return { ok: false, error: data.error };
+  }
+  return { ok: true };
 }
 
 export async function logout(): Promise<void> {
