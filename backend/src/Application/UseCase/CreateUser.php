@@ -25,6 +25,10 @@ final class CreateUser
             throw new \InvalidArgumentException('Invalid email address');
         }
 
+        if ($this->users->findByEmail($email) !== null) {
+            throw new \InvalidArgumentException('Email already registered.');
+        }
+
         return $this->users->saveUser(trim($name), strtolower($email), password_hash($password, PASSWORD_DEFAULT));
     }
 }
