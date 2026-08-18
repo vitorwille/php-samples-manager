@@ -23,6 +23,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <link
+        rel="icon"
+        href="/icon.svg"
+        type="image/svg+xml"
+        sizes="any"
+      />
       <body className="h-full flex flex-col">{children}</body>
     </html>
   );
