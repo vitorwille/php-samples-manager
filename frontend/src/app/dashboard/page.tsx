@@ -6,6 +6,19 @@ import { fetchSamples, updateSample, checkSession, type Sample } from "@/lib/api
 import Header from "@/app/components/header";
 import { useRouter } from "next/navigation";
 
+const ERROR_TRANSLATIONS: Record<string, string> = {
+  "Sample not found": "Amostra não encontrada.",
+  'sampleTechnician is required to set status to em_analise': "É necessário informar o responsável técnico para iniciar a análise.",
+  'Sample must have a conclusion date to be set to "concluida".': "A amostra precisa de uma data de conclusão para ser concluída.",
+  "Sample conclusion date must be equal or greater than sample receival date.": "A data de conclusão deve ser igual ou posterior à data de recebimento.",
+  'Sample must have a conclusion date to be set to "rejeitada".': "A amostra precisa de uma data de conclusão para ser rejeitada.",
+  'Missing required field: "sampleStatus" or "sampleTechnician".': 'Campo obrigatório não informado: "status" ou "responsável técnico".',
+};
+
+function translateError(msg: string): string {
+  return ERROR_TRANSLATIONS[msg] ?? msg;
+}
+
 // cores - status
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> = {
   recebida: { label: "Recebida", color: "text-yellow-700", bg: "bg-yellow-200/40" },
@@ -201,7 +214,7 @@ export default function Home() {
       await updateSample(body);
       loadSamples();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Erro desconhecido ao avançar status da amostra.");
+      setError(translateError(e instanceof Error ? e.message : "Erro desconhecido ao avançar status da amostra."));
     }
   }
 
@@ -211,7 +224,8 @@ export default function Home() {
     try {
       await sampleNextStatus(conclusionModalSample, conclusionDate);
       closeConclusionModal();
-    } catch {
+    } catch (e: unknown) {
+      setError(translateError(e instanceof Error ? e.message : "Erro ao salvar"));
     } finally {
       setConclusionLoading(false);
     }
@@ -229,7 +243,7 @@ export default function Home() {
       closeRejectModal();
       loadSamples();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Erro ao rejeitar amostra");
+      setError(translateError(e instanceof Error ? e.message : "Erro ao rejeitar amostra"));
     } finally {
       setRejectLoading(false);
     }
@@ -250,7 +264,7 @@ export default function Home() {
       await sampleNextStatus(modalSample);
       closeModal();
     } catch (e: unknown) {
-      setModalError(e instanceof Error ? e.message : "Erro ao salvar");
+      setModalError(translateError(e instanceof Error ? e.message : "Erro ao salvar"));
     } finally {
       setModalLoading(false);
     }
