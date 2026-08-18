@@ -45,4 +45,11 @@ final class UserController
 
         return $response->withStatus(201);
     }
+
+    public function verifyUser(Request $request, Response $response): Response
+    {
+        $response->getBody()->write(json_encode(['status' => 'Authenticated'], JSON_PRETTY_PRINT));
+
+        return $response->withStatus(200);
+    }
 }

@@ -4,8 +4,8 @@ use App\Application\UseCase\CreateSample;
 use App\Application\UseCase\CreateUser;
 use App\Application\UseCase\FindSampleByCode;
 use App\Application\UseCase\GetAllSamples;
-use App\Application\UseCase\GetSamplesByType;
 use App\Application\UseCase\GetAllUsers;
+use App\Application\UseCase\GetSamplesByType;
 use App\Application\UseCase\LoginUser;
 use App\Application\UseCase\SearchSamplesByCode;
 use App\Application\UseCase\UpdateSampleStatus;
@@ -59,4 +59,5 @@ return static function (ContainerInterface $container): void {
         $c->get(UpdateSampleStatus::class),
         $c->get(UpdateSampleTechnician::class),
     ));
+    $container->set(CreateUser::class, fn(ContainerInterface $c) => new CreateUser($c->get(UserRepositoryInterface::class)));
 };

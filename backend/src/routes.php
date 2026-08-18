@@ -12,6 +12,7 @@ return static function (App $app): void {
     $app->post('/api/logout', [AuthController::class, 'logout']);
     $app->post('/api/users', [UserController::class, 'create']);
     $app->get('/api/users', [UserController::class, 'index'])->add(SessionAuthMiddleware::class);
+    $app->get('/api/users/verify', [UserController::class, 'verifyUser'])->add(SessionAuthMiddleware::class);
 
     $app->group('/api/samples', function (RouteCollectorProxy $group): void {
         $group->get('', [SampleController::class, 'index']);
