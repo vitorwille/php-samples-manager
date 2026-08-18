@@ -19,8 +19,23 @@ $app = AppFactory::create();
 
 (require __DIR__ . '/../src/routes.php')($app);
 
-$app->add(function (Request $request, $handler): ResponseInterface {
-    return $handler->handle($request)->withHeader('Content-Type', 'application/json');
+$app->add(function (Request $request, $handler) use ($app): ResponseInterface {
+    if ($request->getMethod() === 'OPTIONS') {
+        return $app
+            ->getResponseFactory()
+            ->createResponse(204)
+            ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
+            ->withHeader('Access-Control-Allow-Credentials', 'true')
+            ->withHeader('Access-Control-Allow-Headers', 'Content-Type')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+    }
+
+    $response = $handler->handle($request);
+
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
+        ->withHeader('Access-Control-Allow-Credentials', 'true')
+        ->withHeader('Content-Type', 'application/json');
 });
 
 $errorMiddleware = $app->addErrorMiddleware(false, false, false);
