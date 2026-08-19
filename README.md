@@ -50,6 +50,7 @@ docker exec -it microlims-api composer test:mutation
 - **Infection:** garantia de qualidade dos cenários de teste.
 - **Bruno Collections:** coleção com todos os endpoints da API para facilitar testes no backend.
 - **Docker:** maior simplicidade para iniciar o projeto.
+- **Pipeline:** execução automática dos testes, garantindo que a lógica permaneça intacta mesmo após alterações.
 
 ---
 
