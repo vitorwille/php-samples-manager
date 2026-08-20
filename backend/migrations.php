@@ -1,11 +1,16 @@
 <?php
 
+$dbName = getenv('DB_NAME');
+
 $pdo = new PDO(
-    sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4', getenv('DB_HOST'), getenv('DB_NAME')),
+    sprintf('mysql:host=%s;charset=utf8mb4', getenv('DB_HOST')),
     getenv('DB_USER'),
     getenv('DB_PASS'),
     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION],
 );
+
+$pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbName`");
+$pdo->exec("USE `$dbName`");
 
 $pdo->exec('CREATE TABLE IF NOT EXISTS migrations (
     id INT AUTO_INCREMENT PRIMARY KEY,
